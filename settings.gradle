@@ -9,4 +9,6 @@ pluginManagement {
 }
 rootProject.name = 'TS-benchmark'
 include 'Worker'
+include 'Orchestrator'
+include 'Common'
 

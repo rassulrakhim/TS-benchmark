@@ -1,6 +1,6 @@
 package data
 
-import common.TSBD
+import common.TSDB
 import data.impl.InfluxDataGenerator
 
 /**
@@ -12,9 +12,9 @@ class DataGeneratorFactory {
     /**
      * Returns DataGenerator for specific TSDB.
      */
-    fun getDataGenerator(name: TSBD): DataGenerator {
+    fun getDataGenerator(name: TSDB): DataGenerator {
         return when (name) {
-            TSBD.INFLUX -> InfluxDataGenerator()
+            TSDB.INFLUX -> InfluxDataGenerator()
         }
     }
 }

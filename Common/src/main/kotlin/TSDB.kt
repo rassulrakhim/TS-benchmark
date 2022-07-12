@@ -5,6 +5,6 @@ package common
  * @date 16.06.2022
  * List of implemented TSDB's.
  */
-enum class TSBD(name: String) {
+enum class TSDB(name: String) {
     INFLUX("influx");
 }

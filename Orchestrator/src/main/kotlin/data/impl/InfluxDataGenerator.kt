@@ -10,7 +10,7 @@ import data.DataGenerator
 class InfluxDataGenerator : DataGenerator {
 
     override fun generateData(): InfluxData {
-        return InfluxData("cpu_load_short,host=server2,region=us-west value=0.55")
+        return InfluxData("cpu_load_short,host=server2,region=us-east value=0.515")
     }
 
 }

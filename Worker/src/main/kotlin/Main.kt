@@ -1,7 +1,9 @@
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import common.Status
 import common.TSDB
 import common.TSDBConfig
+import common.WorkloadDTO
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -13,14 +15,17 @@ import io.ktor.server.netty.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import worker.Worker
+import java.lang.reflect.Type
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
 
 var status = Status.WAITING
 var id: Int = -1
 var threads = 1
 var executor: ExecutorService = Executors.newFixedThreadPool(threads)
-var workload = ""
+var workload = WorkloadDTO()
 var tsdb = TSDB.INFLUX
 var tsdbConfig = TSDBConfig()
 
@@ -46,8 +51,8 @@ fun Application.module() {
 
         put("/api/workload") {
             val content = call.receiveText()
-            workload = content
-            log.info("Got new workload with " + workload.length + " items")
+            workload = WorkloadDTO(loadWorkload(content))
+            log.info("Got new workload with " + workload.queries.size + " items")
             call.response.header("Access-Control-Allow-Origin", "*")
             call.respond(HttpStatusCode.OK)
         }
@@ -101,6 +106,12 @@ fun Application.module() {
 
     }
 
+}
+
+fun loadWorkload(workloadAsText: String): ConcurrentLinkedQueue<String> {
+    val customGson = GsonBuilder().create()
+    val listType: Type = object : TypeToken<ConcurrentLinkedQueue<String?>?>() {}.type
+    return customGson.fromJson(workloadAsText, listType)
 }
 
 fun configFromString(configAsText: String): TSDBConfig {

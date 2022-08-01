@@ -2,6 +2,7 @@ package worker.impl
 
 
 import common.TSDBConfig
+import common.WorkloadDTO
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.response.*
@@ -16,11 +17,11 @@ import worker.Worker
  * @author r.rakhim
  * @date 16.06.2022
  */
-class InfluxWorker(influxConfig: TSDBConfig, workload: String) : Worker {
+class InfluxWorker(influxConfig: TSDBConfig, workloadDTO: WorkloadDTO) : Worker {
 
     override val logger: Logger = LoggerFactory.getLogger("InfluxWorker")
     override val config: TSDBConfig = influxConfig
-    private val data = workload
+    private val workload = workloadDTO
 
 
     override suspend fun createDB() {
@@ -40,14 +41,20 @@ class InfluxWorker(influxConfig: TSDBConfig, workload: String) : Worker {
 
     override suspend fun loadData() {
         logger.info("Loading data to DB with name ${config.dbName}")
-        val client = HttpClient()
-        val url = "${config.host}:${config.port}/write?db=${config.dbName}"
-        val response = client.post<HttpResponse>(url) {
-            body = TextContent(data, contentType = ContentType.Any)
+        var query = workload.getNextQuery()
+        while (query != null) {
+            val client = HttpClient()
+            val url = "${config.host}:${config.port}/write?db=${config.dbName}"
+            val response = client.post<HttpResponse>(url) {
+                body = TextContent(query!!, contentType = ContentType.Any)
+            }
+            logger.info("executing = $query")
+            response.close()
+            client.close()
+            query = workload.getNextQuery()
         }
-        logger.info("data = $data")
-        response.close()
-        client.close()
+        logger.info("WE MUST STOP HERE")
+
     }
 
     override fun run() {

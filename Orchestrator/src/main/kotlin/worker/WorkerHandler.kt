@@ -10,7 +10,7 @@ import io.ktor.http.*
 import org.slf4j.LoggerFactory
 import java.net.ConnectException
 
-class WorkerHandler(private val tsdb: TSDB, private val config : TSDBConfig) {
+class WorkerHandler(private val tsdb: TSDB, private val config: TSDBConfig) {
     val dataGenerator = DataGeneratorFactory().getDataGenerator(tsdb)
     val log = LoggerFactory.getLogger("WorkerHandler")
 
@@ -92,11 +92,11 @@ class WorkerHandler(private val tsdb: TSDB, private val config : TSDBConfig) {
         }
     }
 
-    suspend fun setWorkload(worker: WorkerMetaData, json: String) {
+    suspend fun setWorkload(worker: WorkerMetaData, workloadDTO: WorkloadDTO) {
         val client = HttpClient()
         val url = "${worker.url}$WORKLOAD_URL"
         val response = client.put<String>(url) {
-            body = json
+            body = GsonBuilder().create().toJson(workloadDTO.queries)
         }
         client.close()
     }

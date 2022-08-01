@@ -1,6 +1,6 @@
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
-import common.InfluxData
+
 import common.TSDBConfig
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
@@ -20,9 +20,9 @@ fun main(args: Array<String>) = mainBody {
         val log = LoggerFactory.getLogger("Runner")
 
         ///generate data/workload
-        val config = TSDBConfig(host = "http://localhost", port = "8086", dbName = "dddd")
+        val config = TSDBConfig(host = "http://localhost", port = "8086", dbName = "c")
         val workerHandler = WorkerHandler(type, config)
-        val workload = workerHandler.dataGenerator.generateData() as InfluxData
+        val workloadDTO = workerHandler.dataGenerator.generateData()
 
 
         // create work meta data objects
@@ -37,13 +37,14 @@ fun main(args: Array<String>) = mainBody {
                 workers.forEach {
                     workerHandler.setId(it)
                     workerHandler.setThreads(it)
-                    workerHandler.setWorkload(it, workload.data)
+                    workerHandler.setWorkload(it, workloadDTO)
                     workerHandler.setTSDB(it)
                     workerHandler.setConfig(it)
                 }
             }
         } catch (e: Exception) {
             log.error("Error while setting up workers. ${e.message}")
+            return@mainBody
         }
 
         ///start benchmark

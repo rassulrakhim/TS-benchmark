@@ -1,7 +1,10 @@
 package data.impl
 
-import common.InfluxData
+import common.WorkloadDTO
 import data.DataGenerator
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * @author r.rakhim
@@ -9,8 +12,15 @@ import data.DataGenerator
  */
 class InfluxDataGenerator : DataGenerator {
 
-    override fun generateData(): InfluxData {
-        return InfluxData("cpu_load_short,host=server2,region=us-east value=0.515")
+    override fun generateData(): WorkloadDTO {
+        val queries = ConcurrentLinkedQueue<String>()
+//        queries.add("cpu_load_short,host=server2,region=us-east value=0.515")
+        val max = 100
+
+        for (i in 0..10000) {
+            queries.add("cpu_load_short,host=server2,region=us-east value=$i")
+        }
+        return WorkloadDTO(queries)
     }
 
 }

@@ -1,6 +1,6 @@
 package data
 
-import common.TSBDData
+import common.WorkloadDTO
 
 /**
  * @author r.rakhim
@@ -9,7 +9,7 @@ import common.TSBDData
 interface DataGenerator {
 
 
-    fun generateData(): TSBDData
+    fun generateData(): WorkloadDTO
 
 
 }

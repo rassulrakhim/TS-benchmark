@@ -11,5 +11,7 @@ interface DataGenerator {
 
     fun generateData(): WorkloadDTO
 
+    fun getReadQuery(): String
+
 
 }

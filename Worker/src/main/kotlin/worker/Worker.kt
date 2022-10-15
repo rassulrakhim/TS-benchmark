@@ -3,6 +3,7 @@ package worker
 import common.TSDB
 import common.TSDBConfig
 import common.WorkloadDTO
+import measurements.StatisticsHandler
 import org.slf4j.Logger
 import worker.impl.InfluxWorker
 
@@ -28,9 +29,14 @@ interface Worker : Runnable {
     suspend fun loadData(): Unit = throw NotImplementedError("No implementation was found.")
 
     companion object {
-        fun getWorker(tsdb: TSDB, config: TSDBConfig, workloadDTO: WorkloadDTO): Worker {
+        fun getWorker(
+            tsdb: TSDB,
+            config: TSDBConfig,
+            workloadDTO: WorkloadDTO,
+            statisticsHandler: StatisticsHandler
+        ): Worker {
             return when (tsdb) {
-                TSDB.INFLUX -> InfluxWorker(config, workloadDTO)
+                TSDB.INFLUX -> InfluxWorker(config, workloadDTO, statisticsHandler)
             }
         }
     }

@@ -23,4 +23,8 @@ class InfluxDataGenerator : DataGenerator {
         return WorkloadDTO(queries)
     }
 
+    override fun getReadQuery(): String {
+        return "SELECT LAST(\"cpu_load_short\") FROM test-test"
+    }
+
 }

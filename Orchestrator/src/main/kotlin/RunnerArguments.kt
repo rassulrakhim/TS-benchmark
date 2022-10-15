@@ -13,12 +13,16 @@ class RunnerArguments(parser: ArgParser) {
         toString().split(",")
     }
 
+    val databases: List<String> by parser.storing("--databases", help = "database urls") {
+        toString().split(",")
+    }
+
     val type: TSDB by parser.mapping(
         "--influx" to TSDB.INFLUX,
         help = "TS TYPE"
     )
 
-    val scale: Int by parser.storing("--scale", help = "scale") { toInt() }.default(1000)
+    val insertFrequency: Int by parser.storing("--scale", help = "scale") { toInt() }.default(100)
 
 }
 
@@ -29,6 +33,8 @@ fun RunnerArguments.toDTO(): RunnerArgumentsDTO {
     return RunnerArgumentsDTO(
         threadsPerWorker,
         targets,
-        type, scale
+        type,
+        insertFrequency,
+        databases
     )
 }

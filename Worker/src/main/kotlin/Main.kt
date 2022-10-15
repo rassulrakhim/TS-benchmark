@@ -14,6 +14,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import measurements.StatisticsHandler
 import worker.Worker
 import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -27,7 +28,8 @@ var threads = 1
 var executor: ExecutorService = Executors.newFixedThreadPool(threads)
 var workload = WorkloadDTO()
 var tsdb = TSDB.INFLUX
-var tsdbConfig = TSDBConfig()
+var tsdbConfig = TSDBConfig("no_url")
+val statisticsHandler = StatisticsHandler()
 
 fun main(args: Array<String>) {
     var port = 8000
@@ -91,16 +93,29 @@ fun Application.module() {
             executor = Executors.newFixedThreadPool(threads)
 
             repeat(threads) {
-                val worker = Worker.getWorker(tsdb, tsdbConfig, workload)
+                val worker = Worker.getWorker(tsdb, tsdbConfig, workload, statisticsHandler)
                 executor.execute(worker)
             }
 
             GlobalScope.launch {
                 executor.shutdown()
             }
-            status = Status.WAITING
+            status = Status.DONE
             call.response.header("Access-Control-Allow-Origin", "*")
             call.respond(HttpStatusCode.OK)
+        }
+        get("/api/notification"){
+            log.info("Notifications requested")
+            val list = statisticsHandler.getNotifications()
+            call.response.header("Access-Control-Allow-Origin", "*")
+            call.respondText(GsonBuilder().create().toJson(list), ContentType.Text.Plain)
+        }
+        get("/api/measurements"){
+            log.info("Measurements requested")
+            val list = statisticsHandler.getMeasurements()
+            println("meassurement requresttt ${list.size}")
+            call.response.header("Access-Control-Allow-Origin", "*")
+            call.respondText(GsonBuilder().create().toJson(list), ContentType.Text.Plain)
         }
 
 

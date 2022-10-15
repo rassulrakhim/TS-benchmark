@@ -6,8 +6,8 @@ package common
  * Sealed Class for Configurations/DB Locations etc.
  */
 data class TSDBConfig(
-    val host: String = "",
-    val port: String = "",
-    val dbName: String = "testDB1"
+    val url: String,
+    val dbName: String = "test-test"
 )
+
 

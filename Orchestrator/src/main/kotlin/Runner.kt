@@ -1,6 +1,5 @@
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
-
 import common.TSDBConfig
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
@@ -20,8 +19,8 @@ fun main(args: Array<String>) = mainBody {
         val log = LoggerFactory.getLogger("Runner")
 
         ///generate data/workload
-        val config = TSDBConfig(host = "http://localhost", port = "8086", dbName = "c")
-        val workerHandler = WorkerHandler(type, config)
+//        val config = TSDBConfig(host = "http://localhost", port = "8086", dbName = "c")
+        val workerHandler = WorkerHandler(type)
         val workloadDTO = workerHandler.dataGenerator.generateData()
 
 
@@ -39,7 +38,7 @@ fun main(args: Array<String>) = mainBody {
                     workerHandler.setThreads(it)
                     workerHandler.setWorkload(it, workloadDTO)
                     workerHandler.setTSDB(it)
-                    workerHandler.setConfig(it)
+                    workerHandler.setConfig(it, TSDBConfig(it.databaseUrl))
                 }
             }
         } catch (e: Exception) {
@@ -50,7 +49,11 @@ fun main(args: Array<String>) = mainBody {
         ///start benchmark
         runBlocking {
             workers.forEach { workerHandler.startBenchmark(it) }
+            workerHandler.startNotificationListener(workers)
+            workerHandler.startReadQueries(workers, 1000)
+            workerHandler.logResults()
         }
+
         /// request status update
 
 

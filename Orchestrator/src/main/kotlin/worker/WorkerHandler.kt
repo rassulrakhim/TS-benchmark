@@ -135,7 +135,7 @@ class WorkerHandler(private val tsdb: TSDB) {
             var end = false
             do {
                 delay(1000)
-                var workersDone: Int = 0  //worker id to done
+
                 for (w in workers) {
                     try {
                         val client = HttpClient()
@@ -144,9 +144,9 @@ class WorkerHandler(private val tsdb: TSDB) {
                         for (n in parseNotifications(response)) {
                             log.info("Worker with id=${w.id}: $n")
                             if (n.contains("100%")) {
-                                workersDone++
+
                                 workersMeasurements[w.id] = getMeasurements(w).toList()
-                                log.info("Workers done " + workersDone)
+
                                 log.info("workers size" + workers.size)
                                 log.info("measuremnetns " + workersMeasurements.size)
                             }
@@ -155,7 +155,7 @@ class WorkerHandler(private val tsdb: TSDB) {
                         log.error("Error while getting notofications from worker " + w.id + ", " + w.url + ": " + e.toString())
                     }
                 }
-                if (workers.size == workersDone && workersMeasurements.size == workers.size) {
+                if (workersMeasurements.size == workers.size) {
                     end = true
                 }
             } while (!end)

@@ -50,7 +50,6 @@ fun main(args: Array<String>) = mainBody {
         runBlocking {
             workers.forEach { workerHandler.startBenchmark(it) }
             workerHandler.startNotificationListener(workers)
-            workerHandler.startReadQueries(workers, 1000)
             workerHandler.logResults()
         }
 

@@ -1,6 +1,7 @@
 package data
 
 import common.TSDB
+import data.impl.ClickhouseDataGenerator
 import data.impl.InfluxDataGenerator
 
 /**
@@ -15,6 +16,7 @@ class DataGeneratorFactory {
     fun getDataGenerator(name: TSDB): DataGenerator {
         return when (name) {
             TSDB.INFLUX -> InfluxDataGenerator()
+            TSDB.CLICKHOUSE -> ClickhouseDataGenerator()
         }
     }
 }

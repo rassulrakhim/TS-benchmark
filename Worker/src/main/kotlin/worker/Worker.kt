@@ -5,6 +5,7 @@ import common.TSDBConfig
 import common.WorkloadDTO
 import measurements.StatisticsHandler
 import org.slf4j.Logger
+import worker.impl.ClickHouseWorker
 import worker.impl.InfluxWorker
 
 /**
@@ -37,6 +38,7 @@ interface Worker : Runnable {
         ): Worker {
             return when (tsdb) {
                 TSDB.INFLUX -> InfluxWorker(config, workloadDTO, statisticsHandler)
+                TSDB.CLICKHOUSE -> ClickHouseWorker(config, workloadDTO, statisticsHandler)
             }
         }
     }

@@ -20,28 +20,24 @@ import worker.Worker
  * @author r.rakhim
  * @date 16.06.2022
  */
-class InfluxWorker(
-    influxConfig: TSDBConfig, workloadDTO: WorkloadDTO, private val statisticsHandler: StatisticsHandler
+class ClickHouseWorker(
+    config: TSDBConfig, workloadDTO: WorkloadDTO, private val statisticsHandler: StatisticsHandler
 ) : Worker {
 
-    override val logger: Logger = LoggerFactory.getLogger("InfluxWorker")
-    override val config: TSDBConfig = influxConfig
+    override val logger: Logger = LoggerFactory.getLogger("ClickhouseWorker")
+    override val config: TSDBConfig = config
 
     private val workload = workloadDTO
 
     override suspend fun createDB() {
         logger.info("Creating DB with name ${config.dbName}")
         val client = HttpClient()
-        val url = "${config.url}/query"
-        val params = Pair("q", "CREATE DATABASE ${config.dbName}")
+        val url = "${config.url}/query=CREATE TABLE cpu_load_short (host String, region String, value Int) ENGINE = Log&password=123"
 
-        val response = client.post<HttpResponse>(url) {
-            url {
-                parameters.append(params.first, params.second)
-            }
-        }
+        val response = client.post<HttpResponse>(url)
         response.close()
         client.close()
+        statisticsHandler
     }
 
     override suspend fun loadData() {
@@ -55,10 +51,8 @@ class InfluxWorker(
             val measurement = RequestMeasurement(type = type)
             val client = HttpClient()
             measurement.start = System.currentTimeMillis()
-            val url = "${config.url}/write?db=${config.dbName}"
-            val response = client.post<HttpResponse>(url) {
-                body = TextContent(query!!, contentType = ContentType.Any)
-            }
+            val url = "${config.url}/$query&password=123"
+            val response = client.post<HttpResponse>(url)
             logger.info("executing = $query")
             response.close()
             client.close()

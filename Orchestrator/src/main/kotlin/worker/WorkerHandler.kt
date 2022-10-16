@@ -20,7 +20,7 @@ class WorkerHandler(private val tsdb: TSDB) {
     val log = LoggerFactory.getLogger("WorkerHandler")
     var workersMeasurements: MutableMap<Int, List<RequestMeasurement>> = mutableMapOf()
     var measurementsCollected = false
-    val statisticsHandler = OchestratorStatisticsHandler()
+
 
     fun getWorkerMetaDataList(arg: RunnerArgumentsDTO, threadsPerWorker: Int): List<WorkerMetaData> {
         val workerMetaDataList = mutableListOf<WorkerMetaData>()
@@ -150,62 +150,87 @@ class WorkerHandler(private val tsdb: TSDB) {
         }
     }
 
-    fun startReadQueries(workers: List<WorkerMetaData>, insertFrequency: Int) {
-        GlobalScope.launch {
-            do {
-                delay(insertFrequency.toLong())
-                for (w in workers) {
-                    try {
-                        val client = HttpClient()
-                        val url = w.databaseUrl
-                        val query = dataGenerator.getReadQuery()
-                        val measurement = RequestMeasurement()
-                        measurement.start = System.currentTimeMillis()
-                        val response = client.post<HttpResponse>(url) {
-                            body = TextContent(query, contentType = ContentType.Any)
-                        }
-                        measurement.end = System.currentTimeMillis()
-                        statisticsHandler.addMeasurement(w.id,measurement)
-                        client.close()
-                        response.close()
-                        println("read below")
-                        println(response.content)
-                    } catch (e: Throwable) {
-                        log.error("Error while getting notofications from worker " + w.id + ", " + w.url + ": " + e.toString())
-                    }
-                }
-            } while (!measurementsCollected)
-        }
-    }
 
     suspend fun logResults() {
         do {
             delay(1000)
             //Waiting to measurements to be collected
         } while (measurementsCollected.not())
-        val bestDelays = mutableListOf<Pair<Int, Long>>()
-        val readDelays = mutableListOf<Pair<Int, Long>>()
+        val bestWriteDelays = mutableListOf<Pair<Int, Long>>()
+        val bestReadDelays = mutableListOf<Pair<Int, Long>>()
+
+        val averageWriteDelays = mutableListOf<Pair<Int, Double>>()
+        val averageReadDelays = mutableListOf<Pair<Int, Double>>()
+
+        val worstWriteDelays = mutableListOf<Pair<Int, Long>>()
+        val worstReadDelays = mutableListOf<Pair<Int, Long>>()
+
+        val overallWrites = mutableListOf<Pair<Int, Int>>()
+        val overallReads = mutableListOf<Pair<Int, Int>>()
+
+
         for (i in workersMeasurements.keys) {
-            val delaysInWorker = mutableListOf<Long>()
-            println("---")
-            println(statisticsHandler.getMeasurements(i))
-            val readDelaysInWorker = statisticsHandler.getMeasurements(i).map { it.end - it.start }
+            val writeDelaysInWorker = mutableListOf<Long>()
+            val readDelaysInWorker = mutableListOf<Long>()
 
             workersMeasurements[i]?.forEach { m ->
                 val delay = m.end - m.start
-                delaysInWorker.add(delay)
+                if (m.type == MeasurementType.READ) {
+                    readDelaysInWorker.add(delay)
+                } else {
+                    writeDelaysInWorker.add(delay)
+                }
             }
-            bestDelays.add(Pair(i, delaysInWorker.min()!!))
-            readDelays.add(Pair(i, readDelaysInWorker.min()!!))
+            bestWriteDelays.add(Pair(i, writeDelaysInWorker.min()!!))
+            bestReadDelays.add(Pair(i, readDelaysInWorker.min()!!))
+
+            averageWriteDelays.add(Pair(i, writeDelaysInWorker.average()))
+            averageReadDelays.add(Pair(i, readDelaysInWorker.average()))
+
+            worstWriteDelays.add(Pair(i, writeDelaysInWorker.max()!!))
+            worstReadDelays.add(Pair(i, readDelaysInWorker.max()!!))
+
+            overallWrites.add(Pair(i,writeDelaysInWorker.size))
+            overallReads.add(Pair(i,readDelaysInWorker.size))
+
         }
 
-        bestDelays.forEach {
+        overallWrites.forEach {
+            log.info("INSERT QUERIES FOR WORKER WITH ID ${it.first} is ${it.second} WAS DONE")
+        }
+
+        overallReads.forEach {
+            log.info("SELECT QUERIES FOR WORKER WITH ID ${it.first} is ${it.second} WAS DONE")
+        }
+
+
+        bestWriteDelays.forEach {
             log.info("BEST INSERT DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
         }
 
-        readDelays.forEach {
-            log.info("BEST READ DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
+        bestReadDelays.forEach {
+            log.info("BEST SELECT DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
         }
+
+
+        averageWriteDelays.forEach {
+            log.info("AVERAGE INSERT DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
+        }
+
+        averageReadDelays.forEach {
+            log.info("AVERAGE SELECT DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
+        }
+
+
+        worstWriteDelays.forEach {
+            log.info("WORST INSERT DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
+        }
+
+        worstReadDelays.forEach {
+            log.info("WORST SELECT DELAY FOR WORKER WITH ID ${it.first} is ${it.second} ms")
+        }
+
+
     }
 
 

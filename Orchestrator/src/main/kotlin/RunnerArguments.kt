@@ -19,6 +19,7 @@ class RunnerArguments(parser: ArgParser) {
 
     val type: TSDB by parser.mapping(
         "--influx" to TSDB.INFLUX,
+        "--clickhouse" to TSDB.CLICKHOUSE,
         help = "TS TYPE"
     )
 

@@ -6,5 +6,6 @@ package common
  * List of implemented TSDB's.
  */
 enum class TSDB(name: String) {
-    INFLUX("influx");
+    INFLUX("influx"),
+    CLICKHOUSE("clickhouse")
 }

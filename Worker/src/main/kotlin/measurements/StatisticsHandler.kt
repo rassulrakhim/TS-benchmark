@@ -50,6 +50,9 @@ class StatisticsHandler {
     fun reset() {
         this.measurements = ArrayList<RequestMeasurement>()
         resetNotifications()
+        total = 0
+        percentageToNotify = 0
+        count = 0
     }
 
 

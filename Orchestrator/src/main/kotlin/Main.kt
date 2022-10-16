@@ -35,6 +35,7 @@ fun main(args: Array<String>) = mainBody {
             runBlocking {
                 workers.forEach {
                     workerHandler.setId(it)
+                    workerHandler.reset(it)
                     workerHandler.setThreads(it)
                     workerHandler.setWorkload(it, workloadDTO)
                     workerHandler.setTSDB(it)

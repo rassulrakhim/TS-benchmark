@@ -51,6 +51,13 @@ fun Application.module() {
             call.respondText(Status.WAITING.name, ContentType.Text.Plain)
         }
 
+        get("/api/reset") {
+            log.info("Reseting")
+            statisticsHandler.reset()
+            call.response.header("Access-Control-Allow-Origin", "*")
+            call.respondText(Status.WAITING.name, ContentType.Text.Plain)
+        }
+
         put("/api/workload") {
             val content = call.receiveText()
             workload = WorkloadDTO(loadWorkload(content))
@@ -104,13 +111,13 @@ fun Application.module() {
             call.response.header("Access-Control-Allow-Origin", "*")
             call.respond(HttpStatusCode.OK)
         }
-        get("/api/notification"){
+        get("/api/notification") {
             log.info("Notifications requested")
             val list = statisticsHandler.getNotifications()
             call.response.header("Access-Control-Allow-Origin", "*")
             call.respondText(GsonBuilder().create().toJson(list), ContentType.Text.Plain)
         }
-        get("/api/measurements"){
+        get("/api/measurements") {
             log.info("Measurements requested")
             val list = statisticsHandler.getMeasurements()
             println("meassurement requresttt ${list.size}")

@@ -89,6 +89,16 @@ class WorkerHandler(private val tsdb: TSDB) {
         }
     }
 
+    suspend fun reset(worker: WorkerMetaData) {
+        val client = HttpClient()
+        val url = "${worker.url}$RESET_URL"
+        val response = client.get<HttpResponse>(url)
+        client.close()
+        if (response.status == HttpStatusCode.OK) {
+            log.info("Worker on ${worker.url} now reseted.")
+        }
+    }
+
     suspend fun setConfig(worker: WorkerMetaData, config: TSDBConfig) {
         val client = HttpClient()
         val url = "${worker.url}$CONFIG_URL"
@@ -260,6 +270,7 @@ class WorkerHandler(private val tsdb: TSDB) {
         const val WORKLOAD_URL = "/api/workload"
         const val START_URL = "/api/start"
         const val TSDB_URL = "/api/tsdb"
+        const val RESET_URL = "/api/reset"
         const val CONFIG_URL = "/api/config"
         const val NOTIFICATION_URL = "/api/notification"
         const val MEASUREMENTS_URL = "/api/measurements"

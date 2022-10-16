@@ -20,7 +20,6 @@ class StatisticsHandler {
     private var measurements = ArrayList<RequestMeasurement>()
 
 
-
     @Synchronized
     fun addDone() {
         count++
@@ -46,6 +45,11 @@ class StatisticsHandler {
 
     fun getMeasurements(): ArrayList<RequestMeasurement> {
         return measurements
+    }
+
+    fun reset() {
+        this.measurements = ArrayList<RequestMeasurement>()
+        resetNotifications()
     }
 
 

@@ -146,6 +146,9 @@ class WorkerHandler(private val tsdb: TSDB) {
                             if (n.contains("100%")) {
                                 workersDone[w.id] = true
                                 workersMeasurements[w.id] = getMeasurements(w).toList()
+                                println("Workers done " + workersDone.size)
+                                println("workers size" + workers.size)
+                                println("measuremnetns " + workersMeasurements.size)
                             }
                         }
                     } catch (e: ConnectException) {

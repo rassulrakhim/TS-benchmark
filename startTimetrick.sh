@@ -38,7 +38,7 @@ chmod +x evaluationServices/*.sh
 ##Build and Start Tool(s), e.g., buildMatchingTool
 #cd openISBTBackend
 #gradle clean buildMatchingTool
-#java -jar build/libs/openISBTBackend-1.0-SNAPSHOT.jar
+#java -jar build/libs/Orchestrator-1.0-SNAPSHOT.jar
 #cd ..
 
 #Build and run one Worker

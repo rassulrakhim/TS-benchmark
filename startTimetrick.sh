@@ -9,9 +9,9 @@
 #6. run this script: ./startTimetrick.sh
 
 #install git
-sudo yum install git -y
+sudo apt install git -y
 #Install Java
-sudo yum install java -y
+sudo apt install java -y
 # Install gradle
 wget -N https://services.gradle.org/distributions/gradle-4.10.3-bin.zip
 sudo mkdir /opt/gradle
@@ -19,8 +19,8 @@ sudo unzip -u -d /opt/gradle gradle-4.10.3-bin.zip
 export PATH=$PATH:/opt/gradle/gradle-4.10.3/bin
 
 #Stop Worker
-workerID="$(ps -aux | grep openISBTWorker | grep -v grep | grep SCREEN | cut -f 3 -d " ")"
-ps -aux | grep openISBTWorker
+workerID="$(ps -aux | grep Worker | grep -v grep | grep SCREEN | cut -f 3 -d " ")"
+ps -aux | grep Worker
 echo $workerID
 kill -9 $workerID
 
@@ -38,4 +38,4 @@ chmod +x evaluationServices/*.sh
 #Build and run one Worker
 cd Worker
 gradle clean build jar
-screen -mdS "openISBTWorker" java -jar build/libs/openISBTWorker-1.0-SNAPSHOT.jar 8000
+screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000

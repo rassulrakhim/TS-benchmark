@@ -8,16 +8,22 @@
 #5.1 Create more swap: ./initSwap.sh swap2
 #6. run this script: ./startTimetrick.sh
 
+#install screen
+sudo apt-get install screen -y
+#install unzip zip
+sudo apt-get install zip unzip -y
+#install wget
+sudo apt-get install wget -y
 #install git
 sudo apt install git -y
 #Install Java
-sudo apt install java -y
+sudo apt install default-jre -y
 # Install gradle
 wget -N https://services.gradle.org/distributions/gradle-4.10.3-bin.zip
 sudo mkdir /opt/gradle
 sudo unzip -u -d /opt/gradle gradle-4.10.3-bin.zip
 export PATH=$PATH:/opt/gradle/gradle-4.10.3/bin
-
+gr
 #Stop Worker
 workerID="$(ps -aux | grep Worker | grep -v grep | grep SCREEN | cut -f 3 -d " ")"
 ps -aux | grep Worker
@@ -38,4 +44,5 @@ chmod +x evaluationServices/*.sh
 #Build and run one Worker
 cd Worker
 gradle clean build jar
-screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
+#screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
+java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000

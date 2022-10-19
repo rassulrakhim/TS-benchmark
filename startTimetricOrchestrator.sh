@@ -35,7 +35,7 @@ chmod +x evaluationServices/*.sh
 
 ##Build and Start Orchestrator
 cd Orchestrator
-gradle clean build jar
+#gradle clean build jar
 #java -jar build/libs/Orchestrator-1.0-SNAPSHOT.jar
 
 

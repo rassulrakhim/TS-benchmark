@@ -8,8 +8,6 @@ import common.WorkloadDTO
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.response.*
-import io.ktor.content.*
-import io.ktor.http.ContentType
 import kotlinx.coroutines.runBlocking
 import measurements.StatisticsHandler
 import org.slf4j.Logger
@@ -32,7 +30,8 @@ class ClickHouseWorker(
     override suspend fun createDB() {
         logger.info("Creating DB with name ${config.dbName}")
         val client = HttpClient()
-        val url = "${config.url}/query=CREATE TABLE cpu_load_short (host String, region String, value Int) ENGINE = Log&password=123"
+        val url =
+            "${config.url}/query=CREATE TABLE cpu_load_short (host String, region String, value Int) ENGINE = Log&password=123"
 
         val response = client.post<HttpResponse>(url)
         response.close()
@@ -49,17 +48,22 @@ class ClickHouseWorker(
                 MeasurementType.READ
             } else MeasurementType.WRITE
             val measurement = RequestMeasurement(type = type)
-            val client = HttpClient()
-            measurement.start = System.currentTimeMillis()
-            val url = "${config.url}/$query&password=123"
-            val response = client.post<HttpResponse>(url)
-            logger.info("executing = $query")
-            response.close()
-            client.close()
-            measurement.end = System.currentTimeMillis()
-            statisticsHandler.addMeasurement(measurement)
-            statisticsHandler.addDone()
-            query = workload.getNextQuery()
+            try {
+                val client = HttpClient()
+                measurement.start = System.currentTimeMillis()
+                val url = "${config.url}/$query&password=123"
+                val response = client.post<HttpResponse>(url)
+                logger.info("executing = $query")
+                response.close()
+                client.close()
+                measurement.end = System.currentTimeMillis()
+                statisticsHandler.addMeasurement(measurement)
+                statisticsHandler.addDone()
+                query = workload.getNextQuery()
+            } catch (e: Throwable) {
+                println(e.message)
+            }
+
         }
         logger.info("WE MUST STOP HERE")
     }

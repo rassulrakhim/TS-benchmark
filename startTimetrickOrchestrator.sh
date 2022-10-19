@@ -1,12 +1,10 @@
-#Setup EC2 instance
-#0. Connect to EC2 instance
+#Setup GCP Debian10 instance
+#0. Connect to Debian10 instance
 #1. Install git: sudo yum install git -y or sudo apt install git -y
-#2. Clone openISBT repo: git clone https://github.com/martingrambow/openISBT.git
-#3. cd to openISBT: cd openISBT
+#2. Clone openISBT repo: git clone https://github.com/rassulrakhim/TS-benchmark.git
+#3. cd to openISBT: cd Orchestrator // or Worker
 #4. chmod +x *.sh
-#5. Create swap: ./initSwap.sh swap1
-#5.1 Create more swap: ./initSwap.sh swap2
-#6. run this script: ./startTimetrick.sh
+#6. run this script: ./startTimetrickOrchestrator.sh
 
 #install screen
 sudo apt-get install screen -y
@@ -35,14 +33,14 @@ git reset --hard
 chmod +x *.sh
 chmod +x evaluationServices/*.sh
 
-##Build and Start Tool(s), e.g., buildMatchingTool
-#cd openISBTBackend
-#gradle clean build jar
-#java -jar build/libs/Orchestrator-1.0-SNAPSHOT.jar
-#cd ..
-
-#Build and run one Worker
-cd Worker
+##Build and Start Orchestrator
+cd Orchestrator
 gradle clean build jar
-#screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
-java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
+java -jar build/libs/Orchestrator-1.0-SNAPSHOT.jar
+
+
+##Build and run one Worker
+#cd Worker
+#gradle clean build jar
+##screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
+#java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000

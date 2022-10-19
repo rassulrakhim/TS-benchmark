@@ -1,9 +1,6 @@
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import common.Status
-import common.TSDB
-import common.TSDBConfig
-import common.WorkloadDTO
+import common.*
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -16,6 +13,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import measurements.StatisticsHandler
 import worker.Worker
+import java.io.BufferedWriter
+import java.io.File
 import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
@@ -121,14 +120,38 @@ fun Application.module() {
             log.info("Measurements requested")
             val list = statisticsHandler.getMeasurements()
             println("meassurement requresttt ${list.size}")
+            val reads = list.filter { it.type == MeasurementType.READ }.map { (it.end-it.start) }.sorted()
+            println("READ 75%:")
+            println(percentile(reads, 25.0))
+            println("READ 50%:")
+            println(percentile(reads, 50.0))
+            println("READ 99%:")
+            println(percentile(reads, 1.0))
+
+            val writes = list.filter { it.type == MeasurementType.WRITE }.map { (it.end-it.start) }.sorted()
+            println("Write 75%:")
+            println(percentile(writes, 25.0))
+            println("Write 50%:")
+            println(percentile(writes, 50.0))
+            println("Write 99%:")
+            println(percentile(writes, 1.0))
             call.response.header("Access-Control-Allow-Origin", "*")
             call.respondText(GsonBuilder().create().toJson(list), ContentType.Text.Plain)
         }
 
 
+
     }
 
+
 }
+
+
+fun percentile(latencies: List<Long>, percentile: Double): Long {
+    val index = Math.ceil(percentile / 100.0 * latencies.size).toInt()
+    return latencies[index - 1]
+}
+
 
 fun loadWorkload(workloadAsText: String): ConcurrentLinkedQueue<String> {
     val customGson = GsonBuilder().create()

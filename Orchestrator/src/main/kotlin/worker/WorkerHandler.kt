@@ -13,6 +13,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
+import java.io.BufferedWriter
+import java.io.File
 import java.net.ConnectException
 
 class WorkerHandler(private val tsdb: TSDB) {
@@ -193,6 +195,17 @@ class WorkerHandler(private val tsdb: TSDB) {
                 } else {
                     writeDelaysInWorker.add(delay)
                 }
+                File("readsForId$i").bufferedWriter().use { out ->
+                    readDelaysInWorker.forEach {
+                        out.writeLn(it.toString())
+                    }
+                }
+                File("writesForId$i").bufferedWriter().use { out ->
+                    writeDelaysInWorker.forEach {
+                        out.writeLn(it.toString())
+                    }
+                }
+
             }
             bestWriteDelays.add(Pair(i, writeDelaysInWorker.min()!!))
             bestReadDelays.add(Pair(i, readDelaysInWorker.min()!!))
@@ -246,6 +259,10 @@ class WorkerHandler(private val tsdb: TSDB) {
 
     }
 
+    fun BufferedWriter.writeLn(line: String) {
+        this.write(line)
+        this.newLine()
+    }
 
     private suspend fun getMeasurements(w: WorkerMetaData): Array<RequestMeasurement> {
         val client = HttpClient()

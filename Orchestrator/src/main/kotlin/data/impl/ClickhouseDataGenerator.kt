@@ -15,7 +15,7 @@ class ClickhouseDataGenerator : DataGenerator {
 //        queries.add("cpu_load_short,host=server2,region=us-east value=0.515")
         val max = 100
 
-        for (i in 0..10000) {
+        for (i in 0..50000) {
             if (i.rem(10) == 0) {
                 queries.add(getReadQuery())
             } else {

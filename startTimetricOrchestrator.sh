@@ -4,7 +4,7 @@
 #2. Clone openISBT repo: git clone https://github.com/rassulrakhim/TS-benchmark.git
 #3. cd to openISBT: cd Orchestrator // or Worker
 #4. chmod +x *.sh
-#6. run this script: ./startTimetrickOrchestrator.sh
+#6. run this script: ./startTimetricOrchestrator.sh
 
 #install screen
 sudo apt-get install screen -y
@@ -33,14 +33,14 @@ git reset --hard
 chmod +x *.sh
 chmod +x evaluationServices/*.sh
 
-##Build and Start Tool(s), e.g., buildMatchingTool
-#cd openISBTBackend
-#gradle clean build jar
-#java -jar build/libs/Orchestrator-1.0-SNAPSHOT.jar
-#cd ..
-
-#Build and run one Worker
-cd Worker
+##Build and Start Orchestrator
+cd Orchestrator
 gradle clean build jar
-#screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
-java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
+#java -jar build/libs/Orchestrator-1.0-SNAPSHOT.jar
+
+
+##Build and run one Worker
+#cd Worker
+#gradle clean build jar
+##screen -mdS "Worker" java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000
+#java -jar build/libs/Worker-1.0-SNAPSHOT.jar 8000

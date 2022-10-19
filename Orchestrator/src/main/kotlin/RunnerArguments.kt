@@ -11,7 +11,7 @@ class RunnerArguments(parser: ArgParser) {
 
     val targets: List<String> by parser.storing("--targets", help = "targets host:port") {
         toString().split(",")
-    }.default(listOf("http://10.166.0.34:8000"))
+    }.default(listOf("http://10.166.0.38:8000"))
 
     val databases: List<String> by parser.storing("--databases", help = "database urls") {
         toString().split(",")

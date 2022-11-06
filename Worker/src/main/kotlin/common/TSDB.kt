@@ -7,5 +7,6 @@ package common
  */
 enum class TSDB(name: String) {
     INFLUX("influx"),
-    CLICKHOUSE("clickhouse")
+    CLICKHOUSE("clickhouse"),
+    TIMESCALE("timescale")
 }

@@ -7,7 +7,9 @@ package common
  */
 data class TSDBConfig(
     val url: String,
-    val dbName: String = "test-test"
+    val dbName: String = "test-test",
+    val username: String = "admin",
+    val password: String = "admin"
 )
 
 

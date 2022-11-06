@@ -10,13 +10,11 @@ import java.util.concurrent.ConcurrentLinkedQueue
  */
 class ClickhouseDataGenerator : DataGenerator {
 
-    override fun generateData(): WorkloadDTO {
+    override fun generateData(scale:Long, reads: Int): WorkloadDTO {
         val queries = ConcurrentLinkedQueue<String>()
-//        queries.add("cpu_load_short,host=server2,region=us-east value=0.515")
-        val max = 100
 
-        for (i in 0..50000) {
-            if (i.rem(10) == 0) {
+        for (i in 0..scale) {
+            if (i.rem(reads) == 0L) {
                 queries.add(getReadQuery())
             } else {
                 queries.add("INSERT INTO cpu_load_short VALUES ('server2','us-east',$i)")

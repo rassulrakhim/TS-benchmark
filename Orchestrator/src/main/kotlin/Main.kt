@@ -21,11 +21,17 @@ fun main(args: Array<String>) = mainBody {
         ///generate data/workload
 //        val config = TSDBConfig(host = "http://localhost", port = "8086", dbName = "c")
         val workerHandler = WorkerHandler(type)
-        val workloadDTO = workerHandler.dataGenerator.generateData()
+        val workloadDTO = workerHandler.dataGenerator.generateData(this.scale, this.insertFrequency)
 
 
         // create work meta data objects
-        val workers = workerHandler.getWorkerMetaDataList(this.toDTO(), threadsPerWorker)
+        val workers = workerHandler.getWorkerMetaDataList(
+            this.toDTO(),
+            threadsPerWorker,
+            this.type.name,
+            this.username,
+            this.password
+        )
 
         ///check workers --> they must be waiting
         runBlocking { workers.forEach { workerHandler.getStatus(it) } }
@@ -39,7 +45,7 @@ fun main(args: Array<String>) = mainBody {
                     workerHandler.setThreads(it)
                     workerHandler.setWorkload(it, workloadDTO)
                     workerHandler.setTSDB(it)
-                    workerHandler.setConfig(it, TSDBConfig(it.databaseUrl))
+                    workerHandler.setConfig(it, TSDBConfig(it.databaseUrl, it.databaseName, it.username, it.password))
                 }
             }
         } catch (e: Exception) {
@@ -47,17 +53,13 @@ fun main(args: Array<String>) = mainBody {
             return@mainBody
         }
 
-        ///start benchmark
+
         runBlocking {
             workers.forEach { workerHandler.startBenchmark(it) }
             workerHandler.startNotificationListener(workers)
             workerHandler.logResults()
         }
 
-        /// request status update
-
-
-        //print results
 
         return@mainBody
     }

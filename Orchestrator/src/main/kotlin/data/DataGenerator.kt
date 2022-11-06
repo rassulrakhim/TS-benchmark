@@ -9,7 +9,7 @@ import common.WorkloadDTO
 interface DataGenerator {
 
 
-    fun generateData(): WorkloadDTO
+    fun generateData(scale: Long, reads: Int): WorkloadDTO
 
     fun getReadQuery(): String
 

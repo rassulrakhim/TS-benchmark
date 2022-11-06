@@ -24,7 +24,13 @@ class WorkerHandler(private val tsdb: TSDB) {
     var measurementsCollected = false
 
 
-    fun getWorkerMetaDataList(arg: RunnerArgumentsDTO, threadsPerWorker: Int): List<WorkerMetaData> {
+    fun getWorkerMetaDataList(
+        arg: RunnerArgumentsDTO,
+        threadsPerWorker: Int,
+        databaseName: String,
+        username: String,
+        password: String
+    ): List<WorkerMetaData> {
         val workerMetaDataList = mutableListOf<WorkerMetaData>()
         for (worker in arg.targets.withIndex()) {
             workerMetaDataList.add(
@@ -32,7 +38,10 @@ class WorkerHandler(private val tsdb: TSDB) {
                     url = worker.value.toProperUlr(),
                     id = worker.index,
                     threads = threadsPerWorker,
-                    databaseUrl = arg.databases[worker.index]
+                    databaseUrl = arg.databases[worker.index],
+                    databaseName = databaseName,
+                    username = username,
+                    password = password
                 )
             )
         }

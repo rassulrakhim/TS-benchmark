@@ -29,9 +29,9 @@ echo $workerID
 kill -9 $workerID
 
 #reset
-git reset --hard
-chmod +x *.sh
-chmod +x evaluationServices/*.sh
+#git reset --hard
+#chmod +x *.sh
+#chmod +x evaluationServices/*.sh
 
 ##Build and Start Orchestrator
 cd Orchestrator

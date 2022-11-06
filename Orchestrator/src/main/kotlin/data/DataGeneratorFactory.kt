@@ -3,6 +3,7 @@ package data
 import common.TSDB
 import data.impl.ClickhouseDataGenerator
 import data.impl.InfluxDataGenerator
+import data.impl.TimescaleDataGenerator
 
 /**
  * @author r.rakhim
@@ -17,6 +18,7 @@ class DataGeneratorFactory {
         return when (name) {
             TSDB.INFLUX -> InfluxDataGenerator()
             TSDB.CLICKHOUSE -> ClickhouseDataGenerator()
+            TSDB.TIMESCALE -> TimescaleDataGenerator()
         }
     }
 }

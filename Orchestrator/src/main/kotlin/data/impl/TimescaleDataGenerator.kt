@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * @author r.rakhim
  * @date 16.06.2022
  */
-class InfluxDataGenerator : DataGenerator {
+class TimescaleDataGenerator : DataGenerator {
 
     override fun generateData(scale:Long, reads: Int): WorkloadDTO {
         val queries = ConcurrentLinkedQueue<String>()
@@ -17,14 +17,14 @@ class InfluxDataGenerator : DataGenerator {
             if (i.rem(reads) == 0L) {
                 queries.add(getReadQuery())
             } else {
-                queries.add("cpu_load_short,host=server2,region=us-east value=$i")
+                queries.add("INSERT INTO cpu_load_short VALUES (NOW(),'server2','us-east',$i)")
             }
         }
         return WorkloadDTO(queries)
     }
 
     override fun getReadQuery(): String {
-        return "SELECT LAST(\"cpu_load_short\") FROM test-test"
+        return "SELECT * FROM cpu_load_short LIMIT 1"
     }
 
 }

@@ -9,11 +9,11 @@ class RunnerArguments(parser: ArgParser) {
 
     val targets: List<String> by parser.storing("--targets", help = "targets host:port") {
         toString().split(",")
-    }.default(listOf("http://0.0.0.0:8000"))
+    }.default(listOf("http://10.166.0.38:8000"))
 
     val databases: List<String> by parser.storing("--databases", help = "database urls") {
         toString().split(",")
-    }.default(listOf("postgres://tsdbadmin:i9isgx9utk8tth30@sr7ug1dsjk.pospgdoicm.tsdb.cloud.timescale.com:34002"))
+    }.default(listOf("http://10.166.0.15:8086"))
 
     val type: TSDB by parser.mapping(
         "--influx" to TSDB.INFLUX,

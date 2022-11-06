@@ -42,9 +42,6 @@ class TimescaleWorker(
             try {
                 measurement.start = System.currentTimeMillis()
                 logger.info("executing = $query")
-//                val url = "jdbc:postgresql://sr7ug1dsjk.pospgdoicm.tsdb.cloud.timescale.com:34002/tsdb"
-//                val user = "tsdbadmin"
-//                val password = "i9isgx9utk8tth30"
                 val url = config.url
                 val user = config.username
                 val password = config.password
@@ -65,7 +62,6 @@ class TimescaleWorker(
                 statisticsHandler.addDone()
                 query = workload.getNextQuery()
             } catch (e: Throwable) {
-                println("we are in catch")
                 println(e.message)
             }
 

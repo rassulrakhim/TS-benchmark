@@ -20,7 +20,7 @@ class RunnerArguments(parser: ArgParser) {
         "--clickhouse" to TSDB.CLICKHOUSE,
         help = "TS TYPE"
     ).default(TSDB.TIMESCALE)
-    val workload: Boolean by  parser.storing("-workload", help = "workload") { toBoolean() }.default(false)
+    val workload: Boolean by  parser.storing("--workload", help = "workload") { toBoolean() }.default(false)
 
     val insertFrequency: Int by parser.storing("--freq", help = "scale") { toInt() }.default(10)
     val scale: Long by parser.storing("--scale", help = "scale") { toLong() }.default(10000)

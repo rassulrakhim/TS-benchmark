@@ -1,9 +1,13 @@
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import common.TSDBConfig
+import common.WorkloadDTO
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import worker.WorkerHandler
+import java.io.BufferedReader
+import java.io.File
+import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * @author r.rakhim
@@ -18,10 +22,13 @@ fun main(args: Array<String>) = mainBody {
     ArgParser(args).parseInto(::RunnerArguments).run {
         val log = LoggerFactory.getLogger("Runner")
 
-        ///generate data/workload
-//        val config = TSDBConfig(host = "http://localhost", port = "8086", dbName = "c")
         val workerHandler = WorkerHandler(type)
-        val workloadDTO = workerHandler.dataGenerator.generateData(this.scale, this.insertFrequency)
+        val workloadDTO = if (this.workload) {
+            val bufferedReader: BufferedReader = File("workload.txt").bufferedReader()
+            val queries = ConcurrentLinkedQueue<String>()
+            bufferedReader.useLines { lines -> lines.forEach { queries.add(it) } }
+            WorkloadDTO(queries)
+        } else workerHandler.dataGenerator.generateData(this.scale, this.insertFrequency)
 
 
         // create work meta data objects
@@ -63,6 +70,5 @@ fun main(args: Array<String>) = mainBody {
 
         return@mainBody
     }
-
 }
 

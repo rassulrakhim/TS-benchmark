@@ -9,20 +9,21 @@ class RunnerArguments(parser: ArgParser) {
 
     val targets: List<String> by parser.storing("--targets", help = "targets host:port") {
         toString().split(",")
-    }.default(listOf("http://10.166.0.38:8000"))
+    }.default(listOf())
 
     val databases: List<String> by parser.storing("--databases", help = "database urls") {
         toString().split(",")
-    }.default(listOf("http://10.166.0.15:8086"))
+    }.default(listOf())
 
     val type: TSDB by parser.mapping(
         "--influx" to TSDB.INFLUX,
         "--clickhouse" to TSDB.CLICKHOUSE,
+        "--timescale" to TSDB.TIMESCALE,
         help = "TS TYPE"
     ).default(TSDB.TIMESCALE)
     val workload: Boolean by  parser.storing("--workload", help = "workload") { toBoolean() }.default(false)
 
-    val insertFrequency: Int by parser.storing("--freq", help = "scale") { toInt() }.default(10)
+    val readFrequency: Int by parser.storing("--freq", help = "scale") { toInt() }.default(10)
     val scale: Long by parser.storing("--scale", help = "scale") { toLong() }.default(10000)
     val username: String by parser.storing("-u", help = "fff").default("admin")
     val password: String by parser.storing("-p", help = "fff").default("admin")
@@ -37,7 +38,7 @@ fun RunnerArguments.toDTO(): RunnerArgumentsDTO {
         threadsPerWorker,
         targets,
         type,
-        insertFrequency,
+        readFrequency,
         databases
     )
 }

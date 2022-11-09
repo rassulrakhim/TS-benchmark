@@ -28,7 +28,7 @@ fun main(args: Array<String>) = mainBody {
             val queries = ConcurrentLinkedQueue<String>()
             bufferedReader.useLines { lines -> lines.forEach { queries.add(it) } }
             WorkloadDTO(queries)
-        } else workerHandler.dataGenerator.generateData(this.scale, this.insertFrequency)
+        } else workerHandler.dataGenerator.generateData(this.scale, this.readFrequency)
 
 
         // create work meta data objects
